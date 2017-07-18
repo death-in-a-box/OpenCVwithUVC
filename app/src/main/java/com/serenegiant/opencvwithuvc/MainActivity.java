@@ -711,8 +711,8 @@ public final class MainActivity extends BaseActivity
 					if (canvas != null) {
 						try {
 							xxx();
-							canvas.drawBitmap(mFrame, matrix, null);
-							canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.ANTI_ALIAS_FLAG,Paint.DITHER_FLAG));
+							canvas.drawBitmap(mFrame, matrix,new Paint(Paint.DITHER_FLAG) );
+							canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG,Paint.DITHER_FLAG));
 						} catch (final Exception e) {
 							Log.w(TAG, e);
 						} finally {
