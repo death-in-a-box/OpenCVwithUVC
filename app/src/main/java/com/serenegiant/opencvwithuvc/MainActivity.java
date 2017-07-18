@@ -24,7 +24,11 @@
 package com.serenegiant.opencvwithuvc;
 
 import android.animation.Animator;
-import java.nio.channels.FileChannel;
+import android.graphics.DrawFilter;
+import	android.graphics.PaintFlagsDrawFilter;
+import	android.graphics.Paint;
+
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -676,6 +680,7 @@ public final class MainActivity extends BaseActivity
 			height = processing_height;
 		}
 
+
 		@Override
 		public void onFrame(final ByteBuffer frame) {
 			if (mResultView != null) {
@@ -705,10 +710,9 @@ public final class MainActivity extends BaseActivity
 					final Canvas canvas = holder.lockCanvas();
 					if (canvas != null) {
 						try {
-
 							xxx();
 							canvas.drawBitmap(mFrame, matrix, null);
-							canvas.setDrawFilter();
+							canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.ANTI_ALIAS_FLAG,Paint.DITHER_FLAG));
 						} catch (final Exception e) {
 							Log.w(TAG, e);
 						} finally {
