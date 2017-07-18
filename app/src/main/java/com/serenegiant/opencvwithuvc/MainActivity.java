@@ -24,6 +24,7 @@
 package com.serenegiant.opencvwithuvc;
 
 import android.animation.Animator;
+import java.nio.channels.FileChannel;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -57,6 +58,8 @@ import com.serenegiant.usbcameracommon.UVCCameraHandlerMultiSurface;
 import com.serenegiant.utils.CpuMonitor;
 import com.serenegiant.utils.ViewAnimationHelper;
 import com.serenegiant.widget.UVCCameraTextureView;
+
+import org.opencv.core.Mat;
 
 import java.nio.ByteBuffer;
 import java.util.Locale;
@@ -127,7 +130,7 @@ public final class MainActivity extends BaseActivity
 	private View mToolsLayout, mValueLayout;
 	private SeekBar mSettingSeekbar;
 
-	protected ImageProcessor mImageProcessor;
+	protected ImageProcessor mImageProcessor;//TODO: move
 	private TextView mCpuLoadTv;
 	private TextView mFpsTv;
 	private final CpuMonitor cpuMonitor = new CpuMonitor();
@@ -633,7 +636,7 @@ public final class MainActivity extends BaseActivity
 		if (DEBUG) Log.v(TAG, "startImageProcessor:");
 		mIsRunning = true;
 		if (mImageProcessor == null) {
-			mImageProcessor = new ImageProcessor(PREVIEW_WIDTH, PREVIEW_HEIGHT,	// src size
+			mImageProcessor = new ImageProcessor(processing_width, processing_height,	// src size
 				new MyImageProcessorCallback(processing_width, processing_height));	// processing size
 			mImageProcessor.start(processing_width, processing_height);	// processing size
 			final Surface surface = mImageProcessor.getSurface();
@@ -666,9 +669,9 @@ public final class MainActivity extends BaseActivity
 		private final int width, height;
 		private final Matrix matrix = new Matrix();
 		private Bitmap mFrame;
-		protected MyImageProcessorCallback(
-			final int processing_width, final int processing_height) {
-			
+		private Mat mMat = new Mat();
+
+		protected MyImageProcessorCallback(final int processing_width, final int processing_height) {
 			width = processing_width;
 			height = processing_height;
 		}
@@ -689,6 +692,7 @@ public final class MainActivity extends BaseActivity
 // UVCCamera class use to receive images from UVC camera.
 //--------------------------------------------------------------------------------
 				if (mFrame == null) {
+
 					mFrame = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 					final float scaleX = mResultView.getWidth() / (float)width;
 					final float scaleY = mResultView.getHeight() / (float)height;
@@ -701,7 +705,10 @@ public final class MainActivity extends BaseActivity
 					final Canvas canvas = holder.lockCanvas();
 					if (canvas != null) {
 						try {
+
+							xxx();
 							canvas.drawBitmap(mFrame, matrix, null);
+							canvas.setDrawFilter();
 						} catch (final Exception e) {
 							Log.w(TAG, e);
 						} finally {
@@ -717,6 +724,10 @@ public final class MainActivity extends BaseActivity
 		@Override
 		public void onResult(final int type, final float[] result) {
 			// do something
+		}
+
+		private void xxx(){
+
 		}
 		
 	}
