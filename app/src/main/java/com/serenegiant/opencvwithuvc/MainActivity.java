@@ -27,16 +27,18 @@ import android.animation.Animator;
 import android.graphics.DrawFilter;
 import	android.graphics.PaintFlagsDrawFilter;
 import	android.graphics.Paint;
-
+import java.io.File;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.graphics.Typeface;
+import android.graphics.Rect;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.solver.Cache;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -675,7 +677,66 @@ public final class MainActivity extends BaseActivity
 		private Bitmap mFrame;
 		private Mat mMat = new Mat();
 
-		protected MyImageProcessorCallback(final int processing_width, final int processing_height) {
+
+
+
+
+		public class DrawingView extends View {
+
+			public int width;
+			public  int height;
+			private Bitmap  mBitmap;
+			private Canvas  mCanvas;
+			private Path    mPath;
+			private Paint   mBitmapPaint;
+			Context context;
+			private Paint circlePaint;
+			private Path circlePath;
+
+			public DrawingView(Context c) {
+				super(c);
+				context=c;
+				mPath = new Path();
+				mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+				circlePaint = new Paint();
+				circlePath = new Path();
+				circlePaint.setAntiAlias(true);
+				circlePaint.setColor(Color.BLUE);
+				circlePaint.setStyle(Paint.Style.STROKE);
+				circlePaint.setStrokeJoin(Paint.Join.MITER);
+				circlePaint.setStrokeWidth(4f);
+			}
+
+			@Override
+			protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+				super.onSizeChanged(w, h, oldw, oldh);
+
+				mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+				mCanvas = new Canvas(mBitmap);
+			}
+
+			@Override
+			protected void onDraw(Canvas canvas) {
+				super.onDraw(canvas);
+
+				canvas.drawBitmap( mBitmap, 0, 0, mBitmapPaint);
+				canvas.drawPath( mPath,  mPaint);
+				canvas.drawPath( circlePath,  circlePaint);
+			}
+
+			private float mX, mY;
+			private static final float TOUCH_TOLERANCE = 4;
+
+			private void touch_start(float x, float y) {
+				mPath.reset();
+				mPath.moveTo(x, y);
+				mX = x;
+				mY = y;
+			}
+
+
+
+			protected MyImageProcessorCallback(final int processing_width, final int processing_height) {
 			width = processing_width;
 			height = processing_height;
 		}
@@ -706,8 +767,10 @@ public final class MainActivity extends BaseActivity
 				}
 				try {
 					frame.clear();
-					mFrame.copyPixelsFromBuffer(frame.position());
+					mFrame.copyPixelsFromBuffer(frame);
 					Canvas canvas = new Canvas(mFrame);
+					canvas.drawARGB(0,0,0,0);
+					//canvas.drawBitmap(mFrame, srcRect, destRectF, paint);
 					canvas = holder.lockCanvas();
 					if (canvas != null) {
 						try {
