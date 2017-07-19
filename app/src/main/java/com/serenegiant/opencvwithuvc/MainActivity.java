@@ -706,12 +706,13 @@ public final class MainActivity extends BaseActivity
 				}
 				try {
 					frame.clear();
-					mFrame.copyPixelsFromBuffer(frame);
-					final Canvas canvas = holder.lockCanvas();
+					mFrame.copyPixelsFromBuffer(frame.position());
+					Canvas canvas = new Canvas(mFrame);
+					canvas = holder.lockCanvas();
 					if (canvas != null) {
 						try {
-							xxx();
-							canvas.drawBitmap(mFrame, matrix,new Paint(Paint.DITHER_FLAG) );
+							//xxx();
+							canvas.drawBitmap(mFrame, matrix,new Paint(Paint.FILTER_BITMAP_FLAG) );
 							canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG,Paint.DITHER_FLAG));
 						} catch (final Exception e) {
 							Log.w(TAG, e);
